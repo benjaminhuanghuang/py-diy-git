@@ -4,8 +4,15 @@ https://www.leshenko.net/p/ugit/#
 
 
 
+Install ugit to Python venv
+```
+  python3 -m venv venv3
 
-Install ugit script to /Users/bhuang/Library/Python/3.7/bin
+  $ python setup.py develop
+```
+
+
+Install ugit script to Python/3.7/bin
 ```
   $ python3 setup.py develop --user
 ```
