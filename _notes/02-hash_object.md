@@ -21,13 +21,14 @@ sha1sum sample
   f3c953b792f9ab39d1be0bdab7ab5f8350593004
 ```
 
-
+cli.py
 ```
 def hash_object (args):
   with open (args.file, 'rb') as f:
     print (data.hash_object (f.read ()))
 
-
+data.py
+```
 def hash_object (data):
     oid = hashlib.sha1 (data).hexdigest ()
     with open (f'{GIT_DIR}/objects/{oid}', 'wb') as out:

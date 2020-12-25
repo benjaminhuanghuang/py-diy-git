@@ -7,6 +7,13 @@ Create new .ugit directory
 
 
 ## Implement
+cli.py
+```
+  def init (args):
+      data.init ()
+```
+
+data.py
 ```
   import os
 
