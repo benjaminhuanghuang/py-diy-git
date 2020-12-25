@@ -35,7 +35,6 @@ def parse_args ():
     read_tree_parser.set_defaults (func=read_tree)
     read_tree_parser.add_argument ('tree')
 
-
     commit_parser = commands.add_parser ('commit')
     commit_parser.set_defaults (func=commit)
     commit_parser.add_argument ('-m', '--message', required=True)
@@ -55,7 +54,8 @@ def hash_object (args):
 
 def cat_file (args):
     sys.stdout.flush ()
-    sys.stdout.buffer.write (data.get_object (args.object))
+    # expected control the verify of the type
+    sys.stdout.buffer.write (data.get_object (args.object, expected=None))
 
 
 def write_tree (args):
