@@ -1,6 +1,6 @@
 import hashlib
 import os
-
+from collections import namedtuple
 
 GIT_DIR = '.ugit'
 
@@ -10,18 +10,47 @@ def init ():
     os.makedirs (f'{GIT_DIR}/objects')
 
 
-def update_ref (ref, oid):
+# RefValue will have a property symbolic that will say whether it's a symbolic or a direct ref.
+RefValue = namedtuple ('RefValue', ['symbolic', 'value'])
+
+
+def update_ref (ref, value):
+    assert not value.symbolic
+    ref = _get_ref_internal (ref)[0]
     ref_path = f'{GIT_DIR}/{ref}'
     os.makedirs (os.path.dirname (ref_path), exist_ok=True)
     with open (ref_path, 'w') as f:
-        f.write (oid)
+        f.write (value.value)
 
 
 def get_ref (ref):
+    return _get_ref_internal (ref)[1]
+
+
+def _get_ref_internal (ref):
     ref_path = f'{GIT_DIR}/{ref}'
+    value = None
     if os.path.isfile (ref_path):
         with open (ref_path) as f:
-            return f.read ().strip ()
+            value = f.read ().strip ()
+
+    symbolic = bool (value) and value.startswith ('ref:')
+    if symbolic:
+        value = value.split (':', 1)[1].strip ()
+        return _get_ref_internal (value)
+
+    return ref, RefValue (symbolic=False, value=value)
+
+
+
+def iter_refs ():
+    refs = ['HEAD']
+    for root, _, filenames in os.walk (f'{GIT_DIR}/refs/'):
+        root = os.path.relpath (root, GIT_DIR)
+        refs.extend (f'{root}/{name}' for name in filenames)
+
+    for refname in refs:
+        yield refname, get_ref (refname)
 
 
 def hash_object (data, type_='blob'):
